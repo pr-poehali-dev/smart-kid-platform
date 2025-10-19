@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import { soundManager } from '@/utils/sounds';
 
 interface LogicGameProps {
   onComplete: (stars: number) => void;
@@ -63,15 +64,18 @@ const LogicGame = ({ onComplete, onBack }: LogicGameProps) => {
     }
 
     if (!isObstacle(newX, newY)) {
+      soundManager.playClick();
       setPlayerPos({ x: newX, y: newY });
 
       if (isStar(newX, newY) && !isCollected(newX, newY)) {
+        soundManager.playCollect();
         setCollectedStars(prev => [...prev, `${newX}-${newY}`]);
         setScore(prev => prev + 1);
       }
 
       if (newX === exitPos.x && newY === exitPos.y) {
         setTimeout(() => {
+          soundManager.playComplete();
           onComplete(3);
         }, 500);
       }

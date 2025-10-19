@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import { soundManager } from '@/utils/sounds';
 
 interface LetterGameProps {
   onComplete: (stars: number) => void;
@@ -27,6 +28,7 @@ const LetterGame = ({ onComplete, onBack }: LetterGameProps) => {
 
   const handleLetterClick = (letter: string) => {
     if (selectedLetters.length < currentWord.syllables.length) {
+      soundManager.playClick();
       const newSelected = [...selectedLetters, letter];
       setSelectedLetters(newSelected);
 
@@ -35,7 +37,10 @@ const LetterGame = ({ onComplete, onBack }: LetterGameProps) => {
         const isCorrect = newSelected.join('') === currentWord.word;
         
         if (isCorrect) {
+          soundManager.playCorrect();
           setScore(prev => prev + 1);
+        } else {
+          soundManager.playWrong();
         }
 
         setTimeout(() => {
@@ -44,6 +49,7 @@ const LetterGame = ({ onComplete, onBack }: LetterGameProps) => {
             setSelectedLetters([]);
             setShowResult(false);
           } else {
+            soundManager.playComplete();
             onComplete(3);
           }
         }, 1500);

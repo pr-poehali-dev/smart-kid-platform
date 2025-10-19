@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import { soundManager } from '@/utils/sounds';
 
 interface MathGameProps {
   onComplete: (stars: number) => void;
@@ -28,15 +29,18 @@ const MathGame = ({ onComplete, onBack }: MathGameProps) => {
     setShowResult(true);
     
     if (answer === question.answer) {
+      soundManager.playCorrect();
       setScore(prev => prev + 1);
       setTimeout(() => {
         if (score + 1 >= 5) {
+          soundManager.playComplete();
           onComplete(3);
         } else {
           generateQuestion();
         }
       }, 1500);
     } else {
+      soundManager.playWrong();
       setTimeout(() => {
         generateQuestion();
       }, 1500);

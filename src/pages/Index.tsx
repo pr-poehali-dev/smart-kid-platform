@@ -7,6 +7,8 @@ import { Progress } from '@/components/ui/progress';
 import MathGame from '@/components/MathGame';
 import LetterGame from '@/components/LetterGame';
 import LogicGame from '@/components/LogicGame';
+import NatureGame from '@/components/NatureGame';
+import Leaderboard from '@/components/Leaderboard';
 
 interface World {
   id: string;
@@ -56,6 +58,7 @@ const Index = () => {
   const [selectedWorld, setSelectedWorld] = useState<string | null>(null);
   const [stars, setStars] = useState(0);
   const [achievements, setAchievements] = useState<string[]>([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const handleWorldClick = (worldId: string) => {
     setSelectedWorld(worldId);
@@ -80,6 +83,10 @@ const Index = () => {
 
   if (selectedWorld === 'logic') {
     return <LogicGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
+  }
+
+  if (selectedWorld === 'nature') {
+    return <NatureGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
   }
 
   return (
@@ -112,9 +119,14 @@ const Index = () => {
                   <Icon name="Star" className="mr-2 fill-yellow-400 text-yellow-400" size={20} />
                   {stars} звезд
                 </Badge>
-                <Button variant="outline" size="lg" className="gap-2">
-                  <Icon name="User" size={20} />
-                  Профиль
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="gap-2"
+                  onClick={() => setShowLeaderboard(true)}
+                >
+                  <Icon name="Trophy" size={20} />
+                  Лидеры
                 </Button>
               </div>
             </div>
@@ -239,6 +251,10 @@ const Index = () => {
           </div>
         </footer>
       </div>
+
+      {showLeaderboard && (
+        <Leaderboard userStars={stars} onClose={() => setShowLeaderboard(false)} />
+      )}
     </div>
   );
 };
