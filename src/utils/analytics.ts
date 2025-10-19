@@ -56,7 +56,8 @@ export const analyzeSkills = (): SkillAnalysis[] => {
     math: attempts.filter(a => a.game === 'math' || a.game === 'multiplication'),
     letters: attempts.filter(a => a.game === 'letters'),
     logic: attempts.filter(a => a.game === 'logic'),
-    nature: attempts.filter(a => a.game === 'nature')
+    nature: attempts.filter(a => a.game === 'nature'),
+    languages: attempts.filter(a => a.game === 'associations')
   };
 
   const skills: SkillAnalysis[] = [];
@@ -111,7 +112,8 @@ export const analyzeSkills = (): SkillAnalysis[] => {
       math: 'Математика',
       letters: 'Чтение и грамотность',
       logic: 'Логическое мышление',
-      nature: 'Окружающий мир'
+      nature: 'Окружающий мир',
+      languages: 'Иностранные языки'
     };
 
     skills.push({
@@ -227,6 +229,13 @@ export const getRecommendedGames = (profile: ChildProfile): { game: string; reas
     recommendations.push({
       game: 'Буквоград',
       reason: 'Развить навыки чтения и работы с буквами'
+    });
+  }
+
+  if (profile.weaknesses.includes('Иностранные языки')) {
+    recommendations.push({
+      game: 'Ассоциации',
+      reason: 'Учить слова через яркие визуальные образы'
     });
   }
 

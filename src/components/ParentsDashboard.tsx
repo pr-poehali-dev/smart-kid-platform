@@ -45,7 +45,8 @@ const ParentsDashboard = ({ onClose, childName = 'ребенка' }: ParentsDash
     letters: 'Буквоград',
     logic: 'Логикус',
     nature: 'Природния',
-    multiplication: 'Волшебный Сад'
+    multiplication: 'Волшебный Сад',
+    associations: 'Ассоциации'
   };
 
   const levelColors = {

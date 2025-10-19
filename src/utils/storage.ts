@@ -14,6 +14,7 @@ interface GameProgress {
     logic: number;
     nature: number;
     multiplication: number;
+    associations: number;
   };
 }
 
@@ -32,7 +33,8 @@ const defaultProgress: GameProgress = {
     letters: 0,
     logic: 0,
     nature: 0,
-    multiplication: 0
+    multiplication: 0,
+    associations: 0
   }
 };
 

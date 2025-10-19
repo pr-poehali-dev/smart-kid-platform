@@ -9,6 +9,7 @@ import LetterGame from '@/components/LetterGame';
 import LogicGame from '@/components/LogicGame';
 import NatureGame from '@/components/NatureGame';
 import MultiplicationGame from '@/components/MultiplicationGame';
+import AssociationGame from '@/components/AssociationGame';
 import Leaderboard from '@/components/Leaderboard';
 import ParentsDashboard from '@/components/ParentsDashboard';
 import Auth from '@/components/Auth';
@@ -63,6 +64,14 @@ const worlds: World[] = [
     color: '#F97316',
     description: 'Учим таблицу умножения',
     bgGradient: 'from-pink-400 to-rose-600'
+  },
+  {
+    id: 'associations',
+    name: 'Ассоциации',
+    emoji: '🧠',
+    color: '#8B5CF6',
+    description: 'Изучаем иностранные слова',
+    bgGradient: 'from-purple-400 to-indigo-600'
   }
 ];
 
@@ -148,6 +157,10 @@ const Index = () => {
 
   if (selectedWorld === 'multiplication') {
     return <MultiplicationGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
+  }
+
+  if (selectedWorld === 'associations') {
+    return <AssociationGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
   }
 
   return (
