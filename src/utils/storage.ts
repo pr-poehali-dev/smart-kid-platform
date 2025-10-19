@@ -6,6 +6,8 @@ interface GameProgress {
   multiplicationScore: number;
   lastPlayed: string;
   totalGamesPlayed: number;
+  childName?: string;
+  parentEmail?: string;
   bestScores: {
     math: number;
     letters: number;

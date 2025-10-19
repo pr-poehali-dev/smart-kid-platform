@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { soundManager } from '@/utils/sounds';
+import { trackGameAttempt } from '@/utils/analytics';
 
 interface MathGameProps {
   onComplete: (stars: number) => void;
@@ -15,6 +16,8 @@ const MathGame = ({ onComplete, onBack }: MathGameProps) => {
   const [question, setQuestion] = useState({ num1: 2, num2: 3, answer: 5 });
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [mistakes, setMistakes] = useState(0);
+  const [startTime] = useState(Date.now());
 
   const generateQuestion = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
@@ -34,6 +37,16 @@ const MathGame = ({ onComplete, onBack }: MathGameProps) => {
       setTimeout(() => {
         if (score + 1 >= 5) {
           soundManager.playComplete();
+          const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+          trackGameAttempt({
+            game: 'math',
+            timestamp: new Date().toISOString(),
+            score: 5,
+            maxScore: 5,
+            timeSpent,
+            mistakes,
+            hintsUsed: 0
+          });
           onComplete(3);
         } else {
           generateQuestion();
@@ -41,6 +54,7 @@ const MathGame = ({ onComplete, onBack }: MathGameProps) => {
       }, 1500);
     } else {
       soundManager.playWrong();
+      setMistakes(prev => prev + 1);
       setTimeout(() => {
         generateQuestion();
       }, 1500);

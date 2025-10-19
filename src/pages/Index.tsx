@@ -11,7 +11,8 @@ import NatureGame from '@/components/NatureGame';
 import MultiplicationGame from '@/components/MultiplicationGame';
 import Leaderboard from '@/components/Leaderboard';
 import ParentsDashboard from '@/components/ParentsDashboard';
-import { loadProgress, addStars, addAchievement, updateBestScore } from '@/utils/storage';
+import Auth from '@/components/Auth';
+import { loadProgress, addStars, addAchievement, updateBestScore, saveProgress } from '@/utils/storage';
 
 interface World {
   id: string;
@@ -71,12 +72,45 @@ const Index = () => {
   const [achievements, setAchievements] = useState<string[]>([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showParentsDashboard, setShowParentsDashboard] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [childName, setChildName] = useState('');
+  const [parentEmail, setParentEmail] = useState('');
 
   useEffect(() => {
+    const currentUser = localStorage.getItem('umnichka_current_user');
+    if (currentUser) {
+      const users = JSON.parse(localStorage.getItem('umnichka_users') || '{}');
+      const user = users[currentUser];
+      if (user) {
+        setIsAuthenticated(true);
+        setChildName(user.childName);
+        setParentEmail(currentUser);
+      }
+    }
+    
     const progress = loadProgress();
     setStars(progress.stars);
     setAchievements(progress.achievements);
   }, []);
+
+  const handleLogin = (name: string, email: string) => {
+    setIsAuthenticated(true);
+    setChildName(name);
+    setParentEmail(email);
+    saveProgress({ childName: name, parentEmail: email });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('umnichka_current_user');
+    setIsAuthenticated(false);
+    setChildName('');
+    setParentEmail('');
+    window.location.reload();
+  };
+
+  if (!isAuthenticated) {
+    return <Auth onLogin={handleLogin} />;
+  }
 
   const handleWorldClick = (worldId: string) => {
     setSelectedWorld(worldId);
@@ -141,10 +175,14 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-right mr-2">
+                  <p className="text-sm text-gray-600">Привет,</p>
+                  <p className="font-bold text-lg">{childName}!</p>
+                </div>
                 <Badge variant="secondary" className="px-4 py-2 text-lg">
                   <Icon name="Star" className="mr-2 fill-yellow-400 text-yellow-400" size={20} />
-                  {stars} звезд
+                  {stars}
                 </Badge>
                 <Button 
                   variant="outline" 
@@ -153,7 +191,14 @@ const Index = () => {
                   onClick={() => setShowLeaderboard(true)}
                 >
                   <Icon name="Trophy" size={20} />
-                  Лидеры
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="gap-2"
+                  onClick={handleLogout}
+                >
+                  <Icon name="LogOut" size={20} />
                 </Button>
               </div>
             </div>
@@ -290,7 +335,7 @@ const Index = () => {
       )}
 
       {showParentsDashboard && (
-        <ParentsDashboard onClose={() => setShowParentsDashboard(false)} />
+        <ParentsDashboard onClose={() => setShowParentsDashboard(false)} childName={childName} />
       )}
     </div>
   );
