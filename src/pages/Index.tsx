@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,10 @@ import MathGame from '@/components/MathGame';
 import LetterGame from '@/components/LetterGame';
 import LogicGame from '@/components/LogicGame';
 import NatureGame from '@/components/NatureGame';
+import MultiplicationGame from '@/components/MultiplicationGame';
 import Leaderboard from '@/components/Leaderboard';
+import ParentsDashboard from '@/components/ParentsDashboard';
+import { loadProgress, addStars, addAchievement, updateBestScore } from '@/utils/storage';
 
 interface World {
   id: string;
@@ -51,6 +54,14 @@ const worlds: World[] = [
     color: '#FEF7CD',
     description: 'Мир животных и растений',
     bgGradient: 'from-yellow-400 to-yellow-600'
+  },
+  {
+    id: 'multiplication',
+    name: 'Волшебный Сад',
+    emoji: '🌺',
+    color: '#F97316',
+    description: 'Учим таблицу умножения',
+    bgGradient: 'from-pink-400 to-rose-600'
   }
 ];
 
@@ -59,12 +70,24 @@ const Index = () => {
   const [stars, setStars] = useState(0);
   const [achievements, setAchievements] = useState<string[]>([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showParentsDashboard, setShowParentsDashboard] = useState(false);
+
+  useEffect(() => {
+    const progress = loadProgress();
+    setStars(progress.stars);
+    setAchievements(progress.achievements);
+  }, []);
 
   const handleWorldClick = (worldId: string) => {
     setSelectedWorld(worldId);
   };
 
   const handleGameComplete = (earnedStars: number) => {
+    addStars(earnedStars);
+    if (selectedWorld) {
+      addAchievement(selectedWorld);
+      updateBestScore(selectedWorld as any, earnedStars);
+    }
     setStars(prev => prev + earnedStars);
     setAchievements(prev => [...prev, selectedWorld || '']);
   };
@@ -87,6 +110,10 @@ const Index = () => {
 
   if (selectedWorld === 'nature') {
     return <NatureGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
+  }
+
+  if (selectedWorld === 'multiplication') {
+    return <MultiplicationGame onComplete={handleGameComplete} onBack={handleBackToWorlds} />;
   }
 
   return (
@@ -143,7 +170,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             {worlds.map((world, index) => (
               <Card
                 key={world.id}
@@ -243,7 +270,13 @@ const Index = () => {
           <div className="container mx-auto px-4 text-center text-muted-foreground">
             <p className="mb-4">Умничка — обучение как приключение, которое длится всю жизнь! ✨</p>
             <div className="flex justify-center gap-4 flex-wrap">
-              <Button variant="ghost" size="sm">Для родителей</Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowParentsDashboard(true)}
+              >
+                Для родителей
+              </Button>
               <Button variant="ghost" size="sm">Безопасность</Button>
               <Button variant="ghost" size="sm">Помощь</Button>
               <Button variant="ghost" size="sm">Тарифы</Button>
@@ -254,6 +287,10 @@ const Index = () => {
 
       {showLeaderboard && (
         <Leaderboard userStars={stars} onClose={() => setShowLeaderboard(false)} />
+      )}
+
+      {showParentsDashboard && (
+        <ParentsDashboard onClose={() => setShowParentsDashboard(false)} />
       )}
     </div>
   );
